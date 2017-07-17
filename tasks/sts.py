@@ -87,7 +87,7 @@ class STSTask(AbstractTask):
         outputs = model_block(embedded)
 
         # Measurement
-'''
+        '''
         if self.c['ptscorer'] == '1':
             # special scoring mode just based on the answer
             # (assuming that the question match is carried over to the answer
@@ -110,7 +110,7 @@ class STSTask(AbstractTask):
                        layer=Activation('softmax'))
 
         model.add_output(name='classes', input='outS')
-'''   
+        '''   
         model = Model(inputs=inputs, outputs=outputs)
         return model
 
