@@ -66,9 +66,9 @@ class STSTask(AbstractTask):
     def prep_model(self, module_prep_model):
         # Input embedding and encoding
         # model inputs   
-        si0 = Input(name='si0', shape=(self.s0pad,), dtype='int')
+        si0 = Input(name='si0', shape=(self.s0pad,), dtype='int32')
         se0 = Input(name='se0', shape=(self.s0pad,self.emb.N))
-        si1 = Input(name='si1', shape=(self.s1pad,), dtype='int')
+        si1 = Input(name='si1', shape=(self.s1pad,), dtype='int32')
         se1 = Input(name='se1', shape=(self.s1pad,self.emb.N))
         inputs = [si0, se0, si1, se1]
         if self.c['e_add_flags']:

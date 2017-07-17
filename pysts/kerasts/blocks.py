@@ -41,9 +41,9 @@ def embedding(glove, vocab, s0pad, s1pad, dropout_e, dropout_w,
 
     if create_inputs:
 
-        si0 = Input(name='si0', shape=(s0pad,), dtype='int')
+        si0 = Input(name='si0', shape=(s0pad,), dtype='int32')
         se0 = Input(name='se0', shape=(s0pad, glove.N))
-        si1 = Input(name='si1', shape=(s1pad,), dtype='int')
+        si1 = Input(name='si1', shape=(s1pad,), dtype='int32')
         se1 = Input(name='si1', shape=(s1pad, glove.N))
         inputs = [si0, se0, si1, se1]
         if add_flags:
