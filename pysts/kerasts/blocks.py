@@ -42,21 +42,21 @@ def embedding(glove, vocab, s0pad, s1pad, dropout_e, dropout_w,
     if create_inputs:
 
         si0 = Input(name='si0', shape=(s0pad,), dtype='int32')
-        se0 = Input(name='se0', shape=(s0pad, glove.N), dtype='int32')
+        se0 = Input(name='se0', shape=(s0pad, glove.N))
         si1 = Input(name='si1', shape=(s1pad,), dtype='int32')
-        se1 = Input(name='si1', shape=(s1pad, glove.N), dtype='int32')
+        se1 = Input(name='si1', shape=(s1pad, glove.N))
         inputs = [si0, se0, si1, se1]
         if add_flags:
-            f0 = Input(name='f0', shape=(s0pad, nlp.flagsdim), dtype='int32')
-            f1 = Input(name='f1', shape=(s1pad, nlp.flagsdim), dtype='int32')
+            f0 = Input(name='f0', shape=(s0pad, nlp.flagsdim))
+            f1 = Input(name='f1', shape=(s1pad, nlp.flagsdim))
             inputs = [si0, se0, si1, se1, f0, f1]
-    '''
+    '''                   
         for m, p in [(0, s0pad), (1, s1pad)]:
             input1 = Input(name='si%d'%(m,), shape=(p,), dtype='int32')
             input2 = Input(name='se%d'%(m,), shape=(p, glove.N))
             if add_flags:
                 input3 = (name='f%d'%(m,), shape=(p, nlp.flagsdim))
-    '''
+    ''' 
     emb = vocab.embmatrix(glove)
     emb = Embedding(input_dim=emb.shape[0], input_length=s1pad, output_dim=glove.N,
                   mask_zero=True, weights=[emb], trainable=trainable,
@@ -64,21 +64,21 @@ def embedding(glove, vocab, s0pad, s1pad, dropout_e, dropout_w,
     e0_0 = emb(si0)
     e1_0 = emb(si1)
     linear = Activation('linear')
-    e0_1 = linear(add([e0_0, se0]), name='e0_1')
-    e1_1 = linear(add([e1_0, se1]), name='e1_1')
-    eputs = ['e0_1', 'e1_1']
+    e0_1 = linear(add([e0_0, se0]))
+    e1_1 = linear(add([e1_0, se1]))
+    eputs = [e0_1, e1_1]
     if add_flags:
-        e0_f = linear(concat([e0_1, f0]), name='e0_f')
-        e1_f = linear(concat([e1_1, f1]), name='e1_f')
-        eputs = ['e0_f', 'e1_f']
+        e0_f = linear(concat([e0_1, f0]))
+        e1_f = linear(concat([e1_1, f1]))
+        eputs = [e0_f, e1_f]
         N_emb = glove.N + nlp.flagsdim
     else:
         N_emb = glove.N
-
+    
     dropout = Dropout(dropout_e, input_shape=(N_emb,), name='embdrop')
-    e0 = dropout(eputs, name='e0')
-    e1 = dropout(eputs, name='e1')
-
+    e0 = dropout(eputs[0])
+    e1 = dropout(eputs[1])
+    
     '''
     node_emb = Model(name='emb', inputs=['si0', 'si1'], outputs=['e0[0]', 'e1[0]'])
     model.add_shared_node(name='emb', inputs=['si0', 'si1'], outputs=['e0[0]', 'e1[0]'],
@@ -365,7 +365,7 @@ if __name__ == "__main__":
     y = embedding([si0,si1])
     model = Model(inputs=x,outputs=y)
 '''
-
+   
 
 
 
