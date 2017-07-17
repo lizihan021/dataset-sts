@@ -3,7 +3,7 @@ from __future__ import division
 
 import importlib
 from keras.layers.core import Activation
-from keras.models import Graph
+from keras.models import Sequential
 import numpy as np
 import random
 import traceback
@@ -69,9 +69,9 @@ class AbstractTask(object):
         return self.vocab
 
     def load_data(self, trainf, valf, testf=None):
-        self.trainf = trainf
-        self.valf = valf
-        self.testf = testf
+        self.trainf = trainf # train file
+        self.valf = valf     # value file
+        self.testf = testf   # test file
 
         self.gr, self.y, self.vocab = self.load_set(trainf)
         self.grv, self.yv, _ = self.load_set(valf)
@@ -161,7 +161,7 @@ class AbstractTask(object):
 
     def prep_model(self, module_prep_model, oact='sigmoid'):
         # Input embedding and encoding
-        model = Graph()
+        model = Sequential()
         N = B.embedding(model, self.emb, self.vocab, self.s0pad, self.s1pad,
                         self.c['inp_e_dropout'], self.c['inp_w_dropout'], add_flags=self.c['e_add_flags'])
 

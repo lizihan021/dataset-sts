@@ -6,7 +6,7 @@ from __future__ import division
 from __future__ import print_function
 
 from keras.layers.convolutional import Convolution1D, MaxPooling1D
-from keras.layers.core import Activation, Dense, Dropout, Flatten, LambdaMerge
+from keras.layers.core import Activation, Dense, Dropout, Flatten, Lambda
 from keras.layers.embeddings import Embedding
 from keras.layers.recurrent import GRU
 from keras.regularizers import l2
@@ -283,7 +283,7 @@ def absdiff_merge(model, inputs, pfx="out", layer_name="absdiff"):
 
     full_name = "%s%s" % (pfx, layer_name)
     model.add_node(name=layer_name, inputs=inputs,
-                   layer=LambdaMerge([model.nodes[l] for l in inputs], diff, output_shape))
+                   layer=Lambda([model.nodes[l] for l in inputs], diff, output_shape))
     return full_name
 
 
@@ -311,5 +311,5 @@ def dot_time_distributed_merge(model, layers, cos_norm=False):
     else:
         lmb = batched_batched_dot
 
-    return LambdaMerge([model.nodes[l] for l in layers], lmb,
+    return Lambda([model.nodes[l] for l in layers], lmb,
                        lambda s: (s[1][0], s[1][1]))

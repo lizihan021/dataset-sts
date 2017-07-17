@@ -63,7 +63,7 @@ from pysts.kerasts.objectives import ranknet, ranksvm, cicerons_1504
 import pysts.kerasts.blocks as B
 from tasks import default_config
 
-
+# return the config combined by model_config and task_config
 def config(model_config, task_config, params):
     c = default_config(model_config, task_config)
 
@@ -129,6 +129,7 @@ if __name__ == "__main__":
     if 'vocabf' in conf:
         task.load_vocab(conf['vocabf'])
     task.load_data(trainf, valf)
+    print('Dataset loaded')
     for i_run in range(conf['nb_runs']):
         if conf['nb_runs'] == 1:
             runid = '%s-%s-%x' % (taskname, modelname, h)

@@ -27,7 +27,8 @@ Performance:
 from __future__ import print_function
 from __future__ import division
 
-from keras.layers.core import Activation, Dense, Dropout, TimeDistributedDense, TimeDistributedMerge
+from keras.layers.core import Activation, Dense, Dropout
+from keras.layers import TimeDistributedDense, TimeDistributedMerge
 from keras.regularizers import l2
 
 import pysts.kerasts.blocks as B
