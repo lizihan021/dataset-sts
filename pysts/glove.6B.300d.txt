@@ -1,0 +1,1 @@
+/home/zihanli/Desktop/dataset-sts/glove.6B.300d.txt
