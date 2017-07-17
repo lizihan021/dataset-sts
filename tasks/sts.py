@@ -66,16 +66,16 @@ class STSTask(AbstractTask):
     def prep_model(self, module_prep_model):
         # Input embedding and encoding
         # model inputs   
-        si0 = Input(name='si0', shape=(self.s0pad,), dtype='int32')
-        se0 = Input(name='se0', shape=(self.s0pad,self.emb.N), dtype='int32')
-        si1 = Input(name='si1', shape=(self.s1pad,), dtype='int32')
-        se1 = Input(name='se1', shape=(self.s1pad,self.emb.N), dtype='int32')
+        si0 = Input(name='si0', shape=(self.s0pad,), dtype='int')
+        se0 = Input(name='se0', shape=(self.s0pad,self.emb.N))
+        si1 = Input(name='si1', shape=(self.s1pad,), dtype='int')
+        se1 = Input(name='se1', shape=(self.s1pad,self.emb.N))
         inputs = [si0, se0, si1, se1]
         if self.c['e_add_flags']:
-            f0 = Input(name='f0', shape=(self.s0pad, nlp.flagsdim), dtype='int32')
-            f1 = Input(name='f1', shape=(self.s1pad, nlp.flagsdim), dtype='int32')
+            f0 = Input(name='f0', shape=(self.s0pad, nlp.flagsdim))
+            f1 = Input(name='f1', shape=(self.s1pad, nlp.flagsdim))
             inputs = [si0, se0, si1, se1, f0, f1]
-        
+
         # embedding block     
         embedding, N_emb = B.embedding(self.emb, self.vocab, self.s0pad, self.s1pad,
                                        self.c['inp_e_dropout'], self.c['inp_w_dropout'], 
