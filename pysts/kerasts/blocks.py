@@ -61,8 +61,8 @@ def embedding(glove, vocab, s0pad, s1pad, dropout_e, dropout_w,
     emb = Embedding(input_dim=emb.shape[0], input_length=s1pad, output_dim=glove.N,
                   mask_zero=True, weights=[emb], trainable=trainable,
                           dropout=dropout_w, name='emb')
-    e0_0 = emb(si0, name='e0_0')
-    e1_0 = emb(si1, name='e1_0')
+    e0_0 = emb(si0)
+    e1_0 = emb(si1)
     linear = Activation('linear')
     e0_1 = linear(add([e0_0, se0]), name='e0_1')
     e1_1 = linear(add([e1_0, se1]), name='e1_1')
