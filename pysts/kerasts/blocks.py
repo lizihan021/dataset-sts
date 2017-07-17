@@ -5,16 +5,19 @@ Predefined Keras Graph blocks that represent common model components.
 from __future__ import division
 from __future__ import print_function
 
+from keras.models import Model
 from keras.layers.convolutional import Convolution1D, MaxPooling1D
 from keras.layers.core import Activation, Dense, Dropout, Flatten, Lambda
+from keras.layers import Input, add, concatenate
 from keras.layers.embeddings import Embedding
 from keras.layers.recurrent import GRU
 from keras.regularizers import l2
 
+#TODO delete nlp in this folder!
 import pysts.nlp as nlp
 
 
-def embedding(model, glove, vocab, s0pad, s1pad, dropout, dropout_w,
+def embedding(glove, vocab, s0pad, s1pad, dropout_e, dropout_w,
               trainable=True, add_flags=True, create_inputs=True):
     """ The universal sequence input layer.
 
@@ -37,13 +40,47 @@ def embedding(model, glove, vocab, s0pad, s1pad, dropout, dropout_w,
     training.  With add_flags=True, append the NLP flags to the embeddings. """
 
     if create_inputs:
-        for m, p in [(0, s0pad), (1, s1pad)]:
-            model.add_input('si%d'%(m,), input_shape=(p,), dtype='int')
-            model.add_input('se%d'%(m,), input_shape=(p, glove.N))
-            if add_flags:
-                model.add_input('f%d'%(m,), input_shape=(p, nlp.flagsdim))
 
+        si0 = Input(name='si0', shape=(s0pad,), dtype='int32')
+        se0 = Input(name='se0', shape=(s0pad, glove.N), dtype='int32')
+        si1 = Input(name='si1', shape=(s1pad,), dtype='int32')
+        si1 = Input(name='si1', shape=(s1pad, glove.N), dtype='int32')
+        inputs = [si0, se0, si1, se1]
+        if add_flags:
+            f0 = Input(name='f0', shape=(s0pad, nlp.flagsdim), dtype='int32')
+            f1 = Input(name='f1', shape=(s1pad, nlp.flagsdim), dtype='int32')
+            inputs = [si0, se0, si1, se1, f0, f1]
+    '''                   
+        for m, p in [(0, s0pad), (1, s1pad)]:
+            input1 = Input(name='si%d'%(m,), shape=(p,), dtype='int32')
+            input2 = Input(name='se%d'%(m,), shape=(p, glove.N))
+            if add_flags:
+                input3 = (name='f%d'%(m,), shape=(p, nlp.flagsdim))
+    ''' 
     emb = vocab.embmatrix(glove)
+    emb = Embedding(input_dim=emb.shape[0], input_length=s1pad, output_dim=glove.N,
+                  mask_zero=True, weights=[emb], trainable=trainable,
+                          dropout=dropout_w, name='emb')
+    e0_0 = emb(si0, name='e0_0')
+    e1_0 = emb(si1, name='e1_0')
+    linear = Activation('linear')
+    e0_1 = linear(add([e0_0, se0]), name='e0_1')
+    e1_1 = linear(add([e1_0, se1]), name='e1_1')
+    eputs = ['e0_1', 'e1_1']
+    if add_flags:
+        e0_f = linear(concat([e0_1, f0]), name='e0_f')
+        e1_f = linear(concat([e1_1, f1]), name='e1_f')
+        eputs = ['e0_f', 'e1_f']
+        N_emb = glove.N + nlp.flagsdim
+    else:
+        N_emb = glove.N
+    
+    dropout = Dropout(dropout_e, input_shape=(N_emb,), name='embdrop')
+    e0 = dropout(eputs, name='e0')
+    e1 = dropout(eputs, name='e1')
+    
+    '''
+    node_emb = Model(name='emb', inputs=['si0', 'si1'], outputs=['e0[0]', 'e1[0]'])
     model.add_shared_node(name='emb', inputs=['si0', 'si1'], outputs=['e0[0]', 'e1[0]'],
                           layer=Embedding(input_dim=emb.shape[0], input_length=s1pad,
                                           output_dim=glove.N, mask_zero=True,
@@ -51,7 +88,10 @@ def embedding(model, glove, vocab, s0pad, s1pad, dropout, dropout_w,
                                           dropout=dropout_w))
     model.add_node(name='e0[1]', inputs=['e0[0]', 'se0'], merge_mode='sum', layer=Activation('linear'))
     model.add_node(name='e1[1]', inputs=['e1[0]', 'se1'], merge_mode='sum', layer=Activation('linear'))
-    eputs = ['e0[1]', 'e1[1]']
+    '''
+
+    embedding = Model(inputs=inputs, outputs=[e0, e1], name='embedding_block')
+    '''
     if add_flags:
         for m in [0, 1]:
             model.add_node(name='e%d[f]'%(m,), inputs=[eputs[m], 'f%d'%(m,)], merge_mode='concat', layer=Activation('linear'))
@@ -59,11 +99,10 @@ def embedding(model, glove, vocab, s0pad, s1pad, dropout, dropout_w,
         N = glove.N + nlp.flagsdim
     else:
         N = glove.N
-
     model.add_shared_node(name='embdrop', inputs=eputs, outputs=['e0', 'e1'],
                           layer=Dropout(dropout, input_shape=(N,)))
-
-    return N
+    '''
+    return embedding, N_emb
 
 
 def rnn_input(model, N, spad, dropout=3/4, dropoutfix_inp=0, dropoutfix_rec=0,
@@ -313,3 +352,24 @@ def dot_time_distributed_merge(model, layers, cos_norm=False):
 
     return Lambda([model.nodes[l] for l in layers], lmb,
                        lambda s: (s[1][0], s[1][1]))
+
+'''
+if __name__ == "__main__":
+    si0 = Input(name='si0', shape=(60,), dtype='int32')
+    se0 = Input(name='se0', shape=(60, 300), dtype='int32')
+    si1 = Input(name='si1', shape=(60,), dtype='int32')
+    se1 = Input(name='se1', shape=(60, 300), dtype='int32')
+    x = [si0, si1]
+    N, embedding = embedding(x, None, None, 60, 60, 0, 1/2,trainable=True, add_flags=True, create_inputs=True)
+    print(N)
+    y = embedding([si0,si1])
+    model = Model(inputs=x,outputs=y)
+'''
+   
+
+
+
+
+
+
+

@@ -11,7 +11,7 @@ from __future__ import division
 
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.layers.core import Activation, Dense
-from keras.models import Graph
+from keras.models import Model
 from keras.regularizers import l2
 import numpy as np
 
@@ -65,15 +65,29 @@ class STSTask(AbstractTask):
 
     def prep_model(self, module_prep_model):
         # Input embedding and encoding
-        model = Graph()
-        N = B.embedding(model, self.emb, self.vocab, self.s0pad, self.s1pad,
-                        self.c['inp_e_dropout'], self.c['inp_w_dropout'], add_flags=self.c['e_add_flags'])
+        # model inputs   
+        si0 = Input(name='si0', shape=(self.s0pad,), dtype='int32')
+        se0 = Input(name='se0', shape=(self.s0pad,self.emb.N), dtype='int32')
+        si1 = Input(name='si1', shape=(self.s1pad,), dtype='int32')
+        se1 = Input(name='se1', shape=(self.s1pad,self.emb.N), dtype='int32')
+        inputs = [si0, se0, si1, se1]
+        if self.c['e_add_flags']:
+            f0 = Input(name='f0', shape=(self.s0pad, nlp.flagsdim), dtype='int32')
+            f1 = Input(name='f1', shape=(self.s1pad, nlp.flagsdim), dtype='int32')
+            inputs = [si0, se0, si1, se1, f0, f1]
+
+        # embedding block     
+        embedding, N_emb = B.embedding(self.emb, self.vocab, self.s0pad, self.s1pad,
+                                       self.c['inp_e_dropout'], self.c['inp_w_dropout'], 
+                                       add_flags=self.c['e_add_flags'])
+        embedded = embedding(inputs)
 
         # Sentence-aggregate embeddings
         final_outputs = module_prep_model(model, N, self.s0pad, self.s1pad, self.c)
+        outputs = model_block(embedded)
 
         # Measurement
-
+'''
         if self.c['ptscorer'] == '1':
             # special scoring mode just based on the answer
             # (assuming that the question match is carried over to the answer
@@ -96,6 +110,8 @@ class STSTask(AbstractTask):
                        layer=Activation('softmax'))
 
         model.add_output(name='classes', input='outS')
+'''   
+        model = Model(inputs=inputs, outputs=outputs)
         return model
 
     def build_model(self, module_prep_model, do_compile=True):
