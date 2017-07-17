@@ -10,7 +10,7 @@ from __future__ import print_function
 from __future__ import division
 
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-from keras.layers.core import Activation, Dense
+from keras.layers import Activation, Dense, Input
 from keras.models import Model
 from keras.regularizers import l2
 import numpy as np
@@ -75,7 +75,7 @@ class STSTask(AbstractTask):
             f0 = Input(name='f0', shape=(self.s0pad, nlp.flagsdim), dtype='int32')
             f1 = Input(name='f1', shape=(self.s1pad, nlp.flagsdim), dtype='int32')
             inputs = [si0, se0, si1, se1, f0, f1]
-
+        
         # embedding block     
         embedding, N_emb = B.embedding(self.emb, self.vocab, self.s0pad, self.s1pad,
                                        self.c['inp_e_dropout'], self.c['inp_w_dropout'], 
