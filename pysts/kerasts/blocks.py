@@ -64,20 +64,20 @@ def embedding(glove, vocab, s0pad, s1pad, dropout_e, dropout_w,
     e0_0 = emb(si0)
     e1_0 = emb(si1)
     linear = Activation('linear')
-    e0_1 = linear(add([e0_0, se0]), name='e0_1')
-    e1_1 = linear(add([e1_0, se1]), name='e1_1')
-    eputs = ['e0_1', 'e1_1']
+    e0_1 = linear(add([e0_0, se0]))
+    e1_1 = linear(add([e1_0, se1]))
+    eputs = [e0_1, e1_1]
     if add_flags:
-        e0_f = linear(concat([e0_1, f0]), name='e0_f')
-        e1_f = linear(concat([e1_1, f1]), name='e1_f')
-        eputs = ['e0_f', 'e1_f']
+        e0_f = linear(concat([e0_1, f0]))
+        e1_f = linear(concat([e1_1, f1]))
+        eputs = [e0_f, e1_f]
         N_emb = glove.N + nlp.flagsdim
     else:
         N_emb = glove.N
     
     dropout = Dropout(dropout_e, input_shape=(N_emb,), name='embdrop')
-    e0 = dropout(eputs, name='e0')
-    e1 = dropout(eputs, name='e1')
+    e0 = dropout(eputs[0])
+    e1 = dropout(eputs[1])
     
     '''
     node_emb = Model(name='emb', inputs=['si0', 'si1'], outputs=['e0[0]', 'e1[0]'])
