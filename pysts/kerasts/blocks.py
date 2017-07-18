@@ -68,8 +68,8 @@ def embedding(glove, vocab, s0pad, s1pad, dropout_e, dropout_w,
     e1_1 = linear(add([e1_0, se1]))
     eputs = [e0_1, e1_1]
     if add_flags:
-        e0_f = linear(concat([e0_1, f0]))
-        e1_f = linear(concat([e1_1, f1]))
+        e0_f = linear(concatenate([e0_1, f0]))
+        e1_f = linear(concatenate([e1_1, f1]))
         eputs = [e0_f, e1_f]
         N_emb = glove.N + nlp.flagsdim
     else:
