@@ -66,7 +66,7 @@ def prep_model(N_emb, s0pad, s1pad, c):
     e1 = Input(name='e1', shape=(N_emb,))
     winputs = [e0, e1]
 
-    TDLayer = Lambda(function=lambda x: K.mean(x, axis=1), output_shape-lambda shape: (shape[0], ) + shape[2:])
+    TDLayer = Lambda(function=lambda x: K.mean(x, axis=1), output_shape=lambda shape: (shape[0], ) + shape[2:])
     e0b = TDLayer(e0)
     e1b = TDLayer(e1)
     bow_last = (e0b, e1b)
