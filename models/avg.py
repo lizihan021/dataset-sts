@@ -62,8 +62,8 @@ def config(c):
 
 def prep_model(N_emb, s0pad, s1pad, c):
     
-    e0 = Input(name='e0', shape=(, s0pad, N_emb))
-    e1 = Input(name='e1', shape=(, s1pad, N_emb))
+    e0 = Input(name='e0', shape=(s0pad, N_emb))
+    e1 = Input(name='e1', shape=(s1pad, N_emb))
     winputs = [e0, e1]
 
     TDLayer = Lambda(function=lambda x: K.mean(x, axis=1), output_shape=lambda shape: (shape[0], ) + shape[2:])
