@@ -81,7 +81,7 @@ class STSTask(AbstractTask):
                                        self.c['inp_e_dropout'], self.c['inp_w_dropout'], 
                                        add_flags=self.c['e_add_flags'])
         embedded = embedding(inputs)
-        print(embedding.get_output_shape_at(1))
+        print(embedding.get_output_shape_at())
         print(embedded)
         print(N_emb)
         # Sentence-aggregate embeddings
