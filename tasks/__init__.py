@@ -29,7 +29,7 @@ def default_config(model_config, task_config):
     c['Dinit'] = 'glorot_uniform'
     c['f_add_kw'] = False
 
-    c['loss'] = 'mse'  # you really want to override this in each task's config()
+    c['loss'] = 'mean_squared_error'  # you really want to override this in each task's config()
     c['balance_class'] = False
 
     c['opt'] = 'adam'

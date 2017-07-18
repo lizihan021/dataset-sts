@@ -134,7 +134,7 @@ class STSTask(AbstractTask):
             model.nodes[lname].trainable = False
 
         if do_compile:
-            model.compile(loss={'classes': self.c['loss']}, optimizer=self.c['opt'])
+            model.compile(loss=self.c['loss'], optimizer=self.c['opt'])
         return model
 
     def fit_callbacks(self, weightsf):
