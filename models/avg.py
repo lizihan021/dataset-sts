@@ -69,7 +69,7 @@ def prep_model(N_emb, s0pad, s1pad, c):
     TDLayer = Lambda(function=lambda x: K.mean(x, axis=1), output_shape=lambda shape: (shape[0], ) + shape[2:])
     e0b = TDLayer(e0)
     e1b = TDLayer(e1)
-    bow_last = (e0b, e1b)
+    bow_last = [e0b, e1b]
 
     model = Model(inputs=winputs, outputs=bow_last)
     return model
