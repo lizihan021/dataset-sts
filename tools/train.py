@@ -88,7 +88,7 @@ def train_model(runid, model, task, c):
         n_samples = len(task.gr['classes'])
     fit_kwargs['samples_per_epoch'] = int(n_samples * c['epoch_fract'])
     task.fit_model(model, weightsf='weights-'+runid+'-bestval.h5',
-                   batch_size=c['batch_size'], nb_epoch=c['nb_epoch'],
+                   batch_size=c['batch_size'], epochs=c['epochs'],
                    **fit_kwargs)
     # model.save_weights('weights-'+runid+'-final.h5', overwrite=True)
     if c['ptscorer'] is None:
