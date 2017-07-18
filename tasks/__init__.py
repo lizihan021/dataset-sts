@@ -35,7 +35,7 @@ def default_config(model_config, task_config):
     c['opt'] = 'adam'
     c['fix_layers'] = []  # mainly useful for transfer learning, or 'emb' to fix embeddings
     c['batch_size'] = 160
-    c['nb_epoch'] = 16
+    c['epochs'] = 16
     c['nb_runs'] = 1
     c['epoch_fract'] = 1
 
@@ -193,12 +193,11 @@ class AbstractTask(object):
         return model
 
     def fit_model(self, model, **kwargs):
-        return model.fit(self.gr, **kwargs)
-        # if self.c['ptscorer'] is None:
-        #     return model.fit(self.gr, **kwargs)
-        # batch_size = kwargs.pop('batch_size')
-        # kwargs['callbacks'] = self.fit_callbacks(kwargs.pop('weightsf'))
-        # return model.fit_generator(self.sample_pairs(self.gr, batch_size), **kwargs)
+        if self.c['ptscorer'] is None:
+            return model.fit(self.gr, **kwargs)
+        batch_size = kwargs.pop('batch_size')
+        kwargs['callbacks'] = self.fit_callbacks(kwargs.pop('weightsf'))
+        return model.fit_generator(self.sample_pairs(self.gr, batch_size), **kwargs)
 
     def predict(self, model, gr):
         if self.c['ptscorer'] is None:

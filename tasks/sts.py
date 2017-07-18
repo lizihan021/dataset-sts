@@ -41,7 +41,7 @@ class STSTask(AbstractTask):
         c['ptscorer'] = B.dot_ptscorer
 
         c['loss'] = pearsonobj  # ...or 'categorical_crossentropy'
-        c['nb_epoch'] = 32
+        c['epochs'] = 32
 
     def load_set(self, fname):
         def load_file(fname, skip_unlabeled=True):
