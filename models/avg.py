@@ -28,7 +28,7 @@ from __future__ import print_function
 from __future__ import division
 
 
-from keras.layers import TimeDistributed, Dense, Lambda
+from keras.layers import TimeDistributed, Dense, Lambda, Input
 from keras.models import Model
 from keras import backend as K
 
