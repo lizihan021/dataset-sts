@@ -83,6 +83,7 @@ class STSTask(AbstractTask):
         embedded = embedding(inputs)
         print(embedding.get_output_shape_at(0))
         print(embedded)
+        print(N_emb)
         # Sentence-aggregate embeddings
         model_block = module_prep_model(N_emb, self.s0pad, self.s1pad, self.c)
 
