@@ -10,8 +10,9 @@ from __future__ import print_function
 from __future__ import division
 
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-from keras.layers import Activation, Dense, Input
+from keras.layers import Activation, Dense, Input, Lambda
 from keras.models import Model
+from keras import backend as K
 from keras.regularizers import l2
 import numpy as np
 
