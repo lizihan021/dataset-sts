@@ -29,7 +29,7 @@ from __future__ import division
 
 
 from keras.layers import TimeDistributed, Dense, Lambda
-from keras.layers.models import Model
+from keras.models import Model
 from keras import backend as K
 
 import pysts.kerasts.blocks as B
