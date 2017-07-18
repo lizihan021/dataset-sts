@@ -28,8 +28,9 @@ from __future__ import print_function
 from __future__ import division
 
 
-from keras.layers import TimeDistributed, Dense
-from keras.layers.merge import Average
+from keras.layers import TimeDistributed, Dense, Lambda
+from keras.layers.models import Model
+from keras import backend as K
 
 import pysts.kerasts.blocks as B
 
@@ -59,11 +60,16 @@ def config(c):
     c['Ddim'] = 1
 
 
-def prep_model(model, N, s0pad, s1pad, c):
-    winputs = ['e0', 'e1']
-
-    model = TimeDistributed(Average())(winputs)
+def prep_model(N_emb, s0pad, s1pad, c):
     
-    bow_last = ('e0b', 'e1b')
+    e0 = Input(name='e0', shape=(N_emb,))
+    e1 = Input(name='e1', shape=(N_emb,))
+    winputs = [e0, e1]
 
-    return bow_last
+    TDLayer = Lambda(function=lambda x: K.mean(x, axis=1), output_shape-lambda shape: (shape[0], ) + shape[2:])
+    e0b = TDLayer(e0)
+    e1b = TDLayer(e1)
+    bow_last = (e0b, e1b)
+
+    model = Model(inputs=winputs, outputs=bow_last)
+    return model
