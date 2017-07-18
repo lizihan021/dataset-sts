@@ -85,9 +85,14 @@ class STSTask(AbstractTask):
         print(embedded)
         print(N_emb)
         # Sentence-aggregate embeddings
-        model_block = module_prep_model(N_emb, self.s0pad, self.s1pad, self.c)
 
-        outputs = model_block(embedded)
+        # model_block = module_prep_model(N_emb, self.s0pad, self.s1pad, self.c)
+        # outputs = model_block(embedded)
+
+        TDLayer = Lambda(function=lambda x: K.mean(x, axis=1), output_shape=lambda shape: (shape[0], ) + shape[2:])
+        e0b = TDLayer(embedded[0])
+        e1b = TDLayer(embedded[1])
+        bow_last = [e0b, e1b]
 
         # Measurement
         '''
@@ -114,7 +119,7 @@ class STSTask(AbstractTask):
 
         model.add_output(name='classes', input='outS')
         '''   
-        model = Model(inputs=inputs, outputs=outputs)
+        model = Model(inputs=inputs, outputs=bow_last)
         return model
 
     def build_model(self, module_prep_model, do_compile=True):
