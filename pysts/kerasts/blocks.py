@@ -75,7 +75,7 @@ def embedding(glove, vocab, s0pad, s1pad, dropout_e, dropout_w,
     else:
         N_emb = glove.N
     
-    dropout = Dropout(dropout_e, input_shape=(N_emb,), name='embdrop')
+    dropout = Dropout(dropout_e, name='embdrop')
     e0 = dropout(eputs[0])
     e1 = dropout(eputs[1])
     
