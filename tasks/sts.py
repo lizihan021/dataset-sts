@@ -60,8 +60,8 @@ class STSTask(AbstractTask):
         si0, sj0 = vocab.vectorize(s0, self.emb, spad=self.s0pad)
         si1, sj1 = vocab.vectorize(s1, self.emb, spad=self.s1pad)
         f0, f1 = nlp.sentence_flags(s0, s1, self.s0pad, self.s1pad)
-        gr = graph_input_sts(si0, si1, sj0, sj1, y, f0, f1, s0, s1)
-
+        # gr = graph_input_sts(si0, si1, sj0, sj1, y, f0, f1, s0, s1)
+        gr = graph_input_sts(si0, si1, sj0, sj1, y, f0, f1)
         return (gr, y, vocab)
 
     def prep_model(self, module_prep_model):
