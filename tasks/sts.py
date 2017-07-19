@@ -143,6 +143,7 @@ class STSTask(AbstractTask):
         batch_size = 3000  # XXX: hardcoded
         ypred = []
         for ogr, _ in self.sample_pairs(gr, batch_size, shuffle=False, once=True):
+            print(model.predict(ogr))
             ypred += list(model.predict(ogr)['classes'])
         return np.array(ypred)
 

@@ -205,6 +205,6 @@ class AbstractTask(object):
             return model.predict(gr)
         batch_size = 16384  # XXX: hardcoded
         ypred = []
-        for ogr in self.sample_pairs(gr, batch_size, shuffle=False, once=True):
+        for ogr, _ in self.sample_pairs(gr, batch_size, shuffle=False, once=True):
             ypred += list(model.predict(ogr)['score'][:,0])
         return np.array(ypred)
