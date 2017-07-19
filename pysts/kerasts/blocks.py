@@ -251,26 +251,24 @@ def cos_ptscorer(model, inputs, Ddim, N, l2reg, pfx='out', extra_inp=[]):
         return pfx+'cos'
 
 
-def mlp_ptscorer(model, inputs, Ddim, N, l2reg, pfx='out', Dinit='glorot_uniform', sum_mode='sum', extra_inp=[]):
+def mlp_ptscorer(inputs, Ddim, N, l2reg, pfx='out', Dinit='glorot_uniform', sum_mode='sum', extra_inp=[]):
     """ Element-wise features from the pair fed to an MLP. """
+    linear = Activation('linear')
+
     if sum_mode == 'absdiff':
         # model.add_node(name=pfx+'sum', layer=absdiff_merge(model, inputs))
         absdiff_merge(model, inputs, pfx, "sum")
     else:
-        model.add_node(name=pfx+'sum', inputs=inputs, layer=Activation('linear'), merge_mode='sum')
-    model.add_node(name=pfx+'mul', inputs=inputs, layer=Activation('linear'), merge_mode='mul')
-    mlp_inputs = [pfx+'sum', pfx+'mul'] + extra_inp
+        outsum = linear(add(inputs))
+    outmul = linear(multiply(inputs))
+    mlp_inputs = [outsum, outmul] + extra_inp
 
     def mlp_args(mlp_inputs):
         """ return model.add_node() args that are good for mlp_inputs list
         of both length 1 and more than 1. """
-        mlp_args = dict()
         if len(mlp_inputs) > 1:
-            mlp_args['inputs'] = mlp_inputs
-            mlp_args['merge_mode'] = 'concat'
-        else:
-            mlp_args['input'] = mlp_inputs[0]
-        return mlp_args
+            mlp_inputs = concatenate(mlp_inputs)
+        return mlp_inputs
 
     # Ddim may be either 0 (no hidden layer), scalar (single hidden layer) or
     # list (multiple hidden layers)
@@ -280,14 +278,15 @@ def mlp_ptscorer(model, inputs, Ddim, N, l2reg, pfx='out', Dinit='glorot_uniform
         Ddim = [Ddim]
     if Ddim:
         for i, D in enumerate(Ddim):
-            model.add_node(name=pfx+'hdn[%d]'%(i,),
-                           layer=Dense(output_dim=int(N*D), W_regularizer=l2(l2reg), activation='tanh', init=Dinit),
-                           **mlp_args(mlp_inputs))
-            mlp_inputs = [pfx+'hdn[%d]'%(i,)]
 
-    model.add_node(name=pfx+'mlp',
-                   layer=Dense(output_dim=1, W_regularizer=l2(l2reg)), **mlp_args(mlp_inputs))
-    return pfx+'mlp'
+            mlp_inputs = Dense(int(N*D), activation='tanh', kernel_initializer=Dinit, kernel_regularizer=l2(l2reg))(mlp_args(mlp_inputs))
+            # model.add_node(name=pfx+'hdn[%d]'%(i,),
+            #                layer=Dense(output_dim=int(N*D), W_regularizer=l2(l2reg), activation='tanh', init=Dinit),
+            #                **mlp_args(mlp_inputs))
+            # mlp_inputs = [pfx+'hdn[%d]'%(i,)]
+
+    outmlp = Dense(1, kernel_regularizer=l2(l2reg))(mlp_inputs)
+    return outmlp
 
 
 def cat_ptscorer(model, inputs, Ddim, N, l2reg, pfx='out', extra_inp=[]):
