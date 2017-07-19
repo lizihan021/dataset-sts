@@ -60,7 +60,7 @@ def embedding(glove, vocab, s0pad, s1pad, dropout_e, dropout_w,
     emb = vocab.embmatrix(glove)
     emb = Embedding(input_dim=emb.shape[0], input_length=s1pad, output_dim=glove.N,
                   mask_zero=True, weights=[emb], trainable=trainable,
-                          dropout=dropout_w, name='emb')
+                          dropout=dropout_w, name='emb') # TODO no longer support
     e0_0 = emb(si0)
     e1_0 = emb(si1)
     linear = Activation('linear')
