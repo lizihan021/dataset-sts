@@ -8,7 +8,7 @@ from __future__ import print_function
 from keras.models import Model
 from keras.layers.convolutional import Convolution1D, MaxPooling1D
 from keras.layers.core import Activation, Dense, Dropout, Flatten, Lambda
-from keras.layers import Input, add, concatenate
+from keras.layers import Input, add, concatenate, multiply
 from keras.layers.embeddings import Embedding
 from keras.layers.recurrent import GRU
 from keras.regularizers import l2
