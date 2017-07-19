@@ -54,12 +54,12 @@ def graph_nparray_anssel(gr):
 def graph_input_sts(si0, si1, sj0, sj1, y, f0=None, f1=None, s0=None, s1=None):
     """ Produce Keras task specification from vocab-vectorized sentences. """
     import pysts.loader as loader
-    gr = {'si0': si0, 'si1': si1,
-          'sj0': sj0, 'sj1': sj1,
+    gr = {'si0': np.array(si0), 'si1': np.array(si1),
+          'sj0': np.array(sj0), 'sj1': np.array(sj1),
           'classes': loader.sts_labels2categorical(y)}
     if f0 is not None:
-        gr['f0'] = f0
-        gr['f1'] = f1
+        gr['f0'] = np.array(f0)
+        gr['f1'] = np.array(f1)
     if s0 is not None:
         # This is useful for non-neural baselines
         gr['s0'] = s0
