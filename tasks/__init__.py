@@ -102,10 +102,11 @@ class AbstractTask(object):
                     ogr = graph_input_slice(gr, sl)
                     ogr['se0'] = self.emb.map_jset(ogr['sj0'])
                     ogr['se1'] = self.emb.map_jset(ogr['sj1'])
-                    # print(sl)
-                    # print('<<0>>', ogr['sj0'], ogr['se0'])
-                    # print('<<1>>', ogr['sj1'], ogr['se1'])
-                    yield ogr
+                    print(sl)
+                    print('<<0>>', ogr['sj0'], ogr['se0'])
+                    print('<<1>>', ogr['sj1'], ogr['se1'])
+                    y = ogr.pop('classes')
+                    yield (ogr, y)
                 if once:
                     break
         except Exception:
