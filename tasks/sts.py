@@ -93,10 +93,10 @@ class STSTask(AbstractTask):
         TDLayer = Lambda(function=lambda x: K.mean(x, axis=1), output_shape=lambda shape: (shape[0], ) + shape[2:])
         e0b = TDLayer(embedded[0])
         e1b = TDLayer(embedded[1])
-        bow_last = [e0b, e1b]
+        final_outputs = [e0b, e1b]
 
         # Measurement
-        '''
+        
         if self.c['ptscorer'] == '1':
             # special scoring mode just based on the answer
             # (assuming that the question match is carried over to the answer
@@ -105,22 +105,19 @@ class STSTask(AbstractTask):
             final_outputs = [final_outputs[1]]
         else:
             ptscorer = self.c['ptscorer']
-
+        
         kwargs = dict()
         if ptscorer == B.mlp_ptscorer:
             kwargs['sum_mode'] = self.c['mlpsum']
             kwargs['Dinit'] = self.c['Dinit']
-        model.add_node(name='scoreS', input=ptscorer(model, final_outputs, self.c['Ddim'], N, self.c['l2reg'], **kwargs),
-                       layer=Activation('linear'))
 
-        model.add_node(name='out', input='scoreS',
-                       layer=Dense(6, W_regularizer=l2(self.c['l2reg'])))
-        model.add_node(name='outS', input='out',
-                       layer=Activation('softmax'))
+        scoreS = Activation('linear')(ptscorer(model, final_outputs, self.c['Ddim'], N, self.c['l2reg'], **kwargs))
 
-        model.add_output(name='classes', input='outS')
-        '''   
-        model = Model(inputs=inputs, outputs=bow_last)
+        out = Dense(6, W_regularizer=l2(self.c['l2reg']))(scoreS)
+
+        outS = Activation('softmax')(out)
+        
+        model = Model(inputs=inputs, outputs=outS)
         return model
 
     def build_model(self, module_prep_model, do_compile=True):
