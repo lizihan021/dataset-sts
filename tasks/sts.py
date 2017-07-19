@@ -140,7 +140,7 @@ class STSTask(AbstractTask):
                 EarlyStopping(monitor='pearson', mode='max', patience=3)]
 
     def predict(self, model, gr):
-        batch_size = 16384  # XXX: hardcoded
+        batch_size = 3000  # XXX: hardcoded
         ypred = []
         for ogr in self.sample_pairs(gr, batch_size, shuffle=False, once=True):
             ypred += list(model.predict(ogr)['classes'])
