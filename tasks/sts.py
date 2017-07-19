@@ -111,7 +111,7 @@ class STSTask(AbstractTask):
             kwargs['sum_mode'] = self.c['mlpsum']
             kwargs['Dinit'] = self.c['Dinit']
 
-        scoreS = Activation('linear')(ptscorer(final_outputs, self.c['Ddim'], N, self.c['l2reg'], **kwargs))
+        scoreS = Activation('linear')(ptscorer(final_outputs, self.c['Ddim'], N_emb, self.c['l2reg'], **kwargs))
 
         out = Dense(6, kernel_regularizer=l2(self.c['l2reg']))(scoreS)
 
